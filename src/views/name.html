@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingresar Nombre</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bodyname">
+  <div class="containername">
+    <h1 class="h1name">Ingresa tu nombre</h1>
+    <input class="inputname" type="text" placeholder="Tu nombre">
+    <button class="buttonname" id="begin">Comenzar</button>
+  </div>
+  <script>
+    document.getElementById('begin').addEventListener('click', function(e) {
+      e.preventDefault();
+      var name = document.querySelector('.inputname').value; //to storage the name
+      localStorage.setItem('name', name); //to storage the name
+      window.location.href="welcome.html";
+    })
+  </script>
+</body>
+</html>

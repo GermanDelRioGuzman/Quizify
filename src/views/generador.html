@@ -1,0 +1,153 @@
+<!---->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crea un nuevo Examen - Genuiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Spinner styles */
+    .spinner-container {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 9px solid grey;
+      border-top: 9px solid black;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .generate {
+      font-size: 20px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="new-exam-section">
+    <h2>Crea un nuevo examen</h2>
+    <form id="examForm">
+      <input type="text" class="form-control" placeholder="Título del examen" id="Title" required>
+      <input type="text" class="form-control" placeholder="Tema / Temas" id="Tema" required>
+      <input type="number" class="form-control" placeholder="Cantidad de preguntas" id="Np" max="20" min="1" required>
+      <input type="text" class="form-control" placeholder="Descripción" id="Description" required>
+      <select id="Dif" class="form-control" required>
+        <option value="" disabled selected>Nivel de dificultad</option>
+        <option value="facil">fácil</option>
+        <option value="medio">medio</option>
+        <option value="dificil">difícil</option>
+      </select>
+      <button id="generate" class="btn btn-generate">Generar</button>
+    </form>
+  </div>
+
+  <div class="spinner-container" id="spinnerContainer">
+    <div class="spinner"></div>
+    <p class="generate">Generando...</p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Asegurarse de que el spinner esté oculto al cargar la página
+      document.getElementById('spinnerContainer').style.display = 'none';
+    });
+
+    document.getElementById('generate').addEventListener('click', function (e) {
+      e.preventDefault();  // Prevenir el comportamiento por defecto del botón
+
+      // Mostrar el spinner
+      document.getElementById('spinnerContainer').style.display = 'flex';
+
+      var title = document.getElementById('Title').value;
+      var inputCP = document.getElementById('Np').value;
+      var dificultad = document.getElementById('Dif').value;
+      var inputTema = document.getElementById('Tema').value;
+      var description_ = document.getElementById('Description').value;
+
+      console.log("Datos del formulario:", { title, inputCP, dificultad, inputTema, description_ });
+
+      var prompt = `Necesito que desarrolles un examen en formato JSON, el tema del examen será ${inputTema},especificamente ${description_} la dificultad del examen será ${dificultad} y el número de preguntas será ${inputCP}, asegúrate de que cada pregunta tenga exactamente 4 opciones y sigue esta estructura: {
+        "botResponse": {
+          "content": {
+            "tema": "string",
+            "preguntas": [
+              {
+                "enunciado": "string",
+                "opciones": ["string", "string", "string", "string"],
+                "respuesta": "string"
+              }
+            ]
+          }
+        }
+      }`;
+
+      fetch('/recibir-datos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ miDato: prompt })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Datos recibidos de OpenAI:", data);
+
+        if (!data.botResponse || !data.botResponse.content) {
+          throw new Error('Invalid response structure from OpenAI');
+        }
+
+        const examContent = data.botResponse.content;
+        localStorage.setItem('jsonData', JSON.stringify(examContent));
+
+        // Guardar el examen en el servidor
+        return fetch('/save-exam', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title: title,
+            topic: inputTema,
+            description_: description_,
+            level: dificultad,
+            content: examContent // Asegurarse de que el contenido se pase correctamente
+          })
+        });
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Examen guardado:', data);
+        alert(`Examen guardado con código: ${data.accessCode}`);
+        window.location.href = 'vistaProfesor.html';
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+      })
+      .finally(() => {
+        // Ocultar el spinner al final
+        document.getElementById('spinnerContainer').style.display = 'none';
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+6YL0a0zFU8AwfBWr/AIhZPJrFSmM" crossorigin="anonymous"></script>
+</body>
+</html>

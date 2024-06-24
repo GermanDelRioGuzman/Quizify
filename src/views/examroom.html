@@ -1,0 +1,98 @@
+<!---->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Examen</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <!-- Direccionamiento a hoja de estilos particular -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div id="quizContainer"></div> <!-- Changed from <form> to <div> and ID corrected -->
+        <div class="text-center">
+            <button class="finalizar btn btn-primary" id="submit">Enviar</button>
+        </div>
+        <script>
+            function displayExam(examData) {
+                var CP = 0;
+                // Obtener el contenedor del examen
+                const examContainer = document.getElementById('quizContainer');
+
+                // Crear el título del tema
+                const temaTitle = document.createElement('h2');
+                temaTitle.textContent = `Tema: ${examData.botResponse.content.tema}`;
+                examContainer.appendChild(temaTitle);
+
+                // Crear las preguntas y opciones
+                examData.botResponse.content.preguntas.forEach((pregunta, index) => {
+                    // Crear el contenedor de la pregunta
+                    const questionContainer = document.createElement('div');
+                    questionContainer.classList.add('question-container');
+                    examContainer.appendChild(questionContainer);
+
+                    // Crear el enunciado de la pregunta
+                    const questionTitle = document.createElement('h3');
+                    questionTitle.textContent = `${index + 1}. ${pregunta.enunciado}`;
+                    questionContainer.appendChild(questionTitle);
+                    CP++;
+                    // Crear las opciones de la pregunta
+                    pregunta.opciones.forEach((opcion, index) => {
+                        // Crear el contenedor de la opción
+                        const optionContainer = document.createElement('div');
+                        optionContainer.classList.add('option-container');
+                        questionContainer.appendChild(optionContainer);
+
+                        // Crear el input de la opción
+                        const optionInput = document.createElement('input');
+                        optionInput.type = 'radio';
+                        optionInput.name = `question-${index}`;
+                        optionInput.value = opcion;
+                        optionContainer.appendChild(optionInput);
+
+                        // Crear el texto de la opción
+                        const optionText = document.createElement('span');
+                        optionText.textContent = opcion;
+                        optionContainer.appendChild(optionText);
+                    });
+                });
+
+                const submitButton = document.getElementById('submit');
+                submitButton.addEventListener('click', function () {
+                    var puntaje = 0;
+                    examData.botResponse.content.preguntas.forEach((pregunta, index) => {
+                        const radios = document.getElementsByName(`question${index}`);
+                        let respuestaSeleccionada;
+                        radios.forEach(radio => {
+                            if (radio.checked) {
+                                respuestaSeleccionada = radio.value;
+                            }
+                        });
+                        if (respuestaSeleccionada === examData.botResponse.content.respuesta) {
+                            puntaje += 1;
+                        }
+                    });
+                    var calificacion = (puntaje * 10) / CP;
+                    localStorage.setItem('calificacion', calificacion);
+                    window.location.href = 'calificacion.html';
+                    // alert(`Tu calificación es: ${calificacion}`);
+                });
+            };
+
+            const examData = localStorage.getItem('examData'); //its a string and look like a json
+            const data = JSON.parse(examData); //parse the string to a json object
+            const d = JSON.parse(data.data); //parse the string to a json object7
+            displayExam(d);
+
+
+
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+<!---->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro - Genuiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="register-section">
+    <h2>Regístrate</h2>
+    <form action="/registrarme" method="POST">
+      <input type="text" class="form-control" placeholder="Nombre" name="name" required>
+      <input type="text" id="username" class="form-control" placeholder="Username" name="username" required>
+      <input type="password" class="form-control" placeholder="Contraseña" name="password" required>
+      <select name="role" class="form-control" required>
+          <option value="student">Estudiante</option>
+          <option value="teacher">Profesor</option>
+      </select>
+      <button type="submit" class="btn btn-register">Registrarme</button>
+      <div id="username-error" class="error-message">Lo sentimos, esta cuenta ya está registrada.</div>
+    </form>
+    <div class="login-section">
+      <button type="button" class="btn btn-register" id="google-sign-in">
+        Continuar con Google
+      </button>
+    </div>
+    <a href="index.html" class="back-arrow">&larr;</a>
+  </div>
+
+  <script>
+    document.getElementById('google-sign-in').addEventListener('click', function() {
+      window.location.href = '/auth/google/register';
+    });
+
+    // Mostrar mensaje de error si existe
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    if (error) {
+      if (error === 'userexists') {
+        const usernameErrorDiv = document.getElementById('username-error');
+        usernameErrorDiv.style.display = 'block';
+      }
+      // Eliminar el parámetro de error de la URL
+      const url = new URL(window.location);
+      url.searchParams.delete('error');
+      window.history.replaceState({}, document.title, url.toString());
+    }
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
