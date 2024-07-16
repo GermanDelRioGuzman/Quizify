@@ -1,0 +1,45 @@
+<!---->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso al Examen</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body class="room">
+    <div class="exam-entry">
+        <h1 class="title1 ">Ingresar a un examen</h1>
+        <form id="exam-form">
+            <input class="ri" type="number" id="room-number" name="room-number" placeholder="Número de Sala" required>
+            <!-- the upper line send to the server the room number with the required -->
+            <button class="button1" type="submit">Comenzar</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('exam-form').addEventListener('submit', function (event) {
+            // Previene el comportamiento de envío de formulario predeterminado
+            event.preventDefault();
+
+            // Obtiene el número de sala ingresado por el usuario
+            const roomNumber = document.getElementById('room-number').value;
+
+            // Haz una solicitud al servidor para obtener los datos del examen
+            fetch(`http://localhost:3000/get-exam?id=${roomNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    //her we manae the data to be stored in the local storage
+                    const sd = JSON.stringify(data);
+                    localStorage.setItem('examData', sd);
+                    window.location.href = `name.html`;
+                })
+                .catch((error) => console.error('Error:', error));
+        });
+    </script>
+</body>
+
+</html>

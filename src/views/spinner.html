@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Direccionamiento a hoja de estilos particular -->
+    <style>
+        /*spinner*/
+        body {
+            background-color: #b3b3b3;
+            color: black;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .div1{
+            display: flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 9px solid grey;
+            border-top: 9px solid black;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+
+            }
+        }
+        .generate{
+            font-size: 20px;
+            margin-left: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="div1">
+        <div class="spinner">
+        </div>
+        <p class = "generate">Generating...</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        setTimeout(() => {
+            window.location.href = 'vistaEstudiante.html';
+        }, 3000);
+    </script>
+</body>
+
+</html>

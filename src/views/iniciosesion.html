@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio de Sesión - Genuiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="login-section">
+    <h2>Inicio de sesión</h2>
+    <form action="/iniciosesion" method="POST">
+      <input type="text" class="form-control" placeholder="Username" name="username" required>
+      <input type="password" class="form-control" placeholder="Password" name="password" required>
+      <button type="submit" id="sesion" class="btn btn-login" value="enviar">LogIn</button>
+      <button type="button" id="registrame" class="btn btn-login">Sign Up</button>
+      <div class="login-section">
+        <button type="button" class="btn btn-login d-flex align-items-center" id="google-sign-in">
+          <img class="google_img" src="data:image/png;base64,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" alt="Google Icon" style="height: 20px; margin-right: 10px;">
+          Continuar con Google
+        </button>
+      </div>
+    </form>
+    <div id="error-message" class="alert alert-danger" style="display: none;">
+      <!-- error message-->
+    </div>
+  </div>
+  <a href="index.html" class="back-arrow">&larr;</a>
+  <script>
+    document.getElementById('registrame').addEventListener('click', function() {
+      window.location.href = 'registrarme.html';
+    });
+
+    document.getElementById('google-sign-in').addEventListener('click', function() {
+      window.location.href = '/auth/google/login';
+    });
+
+    // Mostrar mensaje de error si existe
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    if (error) {
+      const errorMessageDiv = document.getElementById('error-message');
+      if (error === 'userexists') {
+        errorMessageDiv.textContent = 'La cuenta de Google ya está registrada. Por favor, inicia sesión.';
+      } else if (error === 'complete') {
+        errorMessageDiv.textContent = 'Debe completar su registro antes de iniciar sesión.';
+      }
+      errorMessageDiv.style.display = 'block';
+    }
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

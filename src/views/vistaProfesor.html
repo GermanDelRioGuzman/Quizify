@@ -1,0 +1,637 @@
+<!--PRUEBA1-->
+<!--PENDIENTE SEPARAR style y script-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exámenes del Profesor - Genuiz</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #b3b3b3;
+      color: #333333;
+      height: 100vh;
+      overflow: hidden;
+    }
+  
+    .body1 {
+      display: flex;
+      height: 100vh; 
+    }
+    
+
+    .sidebar {
+      width: 350px;
+      background-color: #4d4d4d;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    
+    .sidebar img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+      border: 3px solid #6c6c6c;
+    }
+    
+    .sidebar h4 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .info-text {
+      color: #d1d1d1;
+      font-size: 18px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .btn-new-exam {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background-color: #4d4d4d;
+      color: white;
+      border: none;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 20px;
+      text-decoration: none;
+    }
+    
+    .btn-new-exam:hover {
+      background-color: #595959;
+    }
+    
+    .scroll-padre {
+      flex-grow: 1;
+      width: 100%;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #6c6c6c;
+      border-radius: 10px;
+    }
+    
+    .scroll-bg {
+      padding: 10px;
+      background-color: #808080;
+      border-radius: 5px;
+    }
+    
+    .scroll-div {
+      height: 100%;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #adb5bd #6c6c6c;
+    }
+    
+    /* Styling for the scrollbar */
+    .scroll-div::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .scroll-div::-webkit-scrollbar-thumb {
+      background-color: #adb5bd;
+      border-radius: 10px;
+    }
+    
+    .scroll-div::-webkit-scrollbar-track {
+      background-color: #6c6c6c;
+      border-radius: 10px;
+    }
+    
+    /* Exam buttons container */
+    .exams-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      align-items: center;
+    }
+    
+    .exam-button {
+      background-color: #808080;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+      width: 70%;
+      transition: background-color 0.3s;
+    }
+    
+    .exam-button:hover {
+      background-color: #6c6c6c;
+    }
+    
+  
+    .exam-results-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: calc(100% - 350px);
+      padding: 20px;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .exam-results-wrapper {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      width: 100%;
+      height: 100%;
+    }
+    
+    #exam-viz {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: #e6e6e6; 
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      color: #333333; 
+      width: 60%;
+      height: 40; 
+    }
+
+    #result-viz {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: #948f8f; 
+      border: 1px solid #948f8f;
+      border-radius: 8px;
+      overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      color: #333333; 
+      width: 60%;
+      height: 40; 
+
+    }
+
+
+    /* para el titulo */
+    #exam-viz h2 {
+      font-weight: bold;
+      font-size: 1.5em;
+    }
+
+    /* para el tema */
+    #exam-viz h3 {
+      font-weight: bold;
+
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+
+    /* codigo de acceso */
+    #exam-viz p.exam-code {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #cfcfcf;
+      padding: 5px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    /* preguntas*/
+    .question-item p {
+      font-weight: bold;
+    }
+
+    /* lista de opciones*/
+    .options-list {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+
+    /* opciones*/
+    .options-list li {
+      margin-bottom: 5px;
+    }
+
+    /*respuestacorrecta */
+    .correct-answer {
+      color: green;
+      font-weight: bold;
+    }
+
+    .results-container {
+      margin-top: 20px;
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background-color: #b3b3b3;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .results-table th, .results-table td {
+      border: 1px solid #6c6c6c;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .results-table th {
+      background-color: #6c6c6c;
+      color: #f0f0f0;
+    }
+
+    .results-table td {
+      background-color: #b3b3b3;
+      color: #333333;
+    }
+
+    .results-table tbody tr:nth-child(odd) {
+      background-color: #d1d1d1;
+    }
+
+    .menu-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 2000;
+    }
+
+    .menu-btn img {
+      width: 20px;
+      filter: invert(1);
+    }
+
+    .sidebar-menu {
+      position: fixed;
+      top: 0;
+      left: -350px;
+      width: 350px;
+      height: 100%;
+      background-color: #4d4d4d;
+      color: white;
+      transition: left 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      z-index: 1000;
+    }
+
+    .sidebar-menu.active {
+      left: 0;
+    }
+
+    .sidebar-menu img {
+      width: 80px;
+      border-radius: 50%;
+    }
+
+    .sidebar-menu h4 {
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .logout-btn {
+      background-color: #000000;
+      border: none;
+      cursor: pointer;
+      color: #f0f5fa;
+      padding: 10px;
+      border-radius: 20px;
+      margin-top: auto;
+      margin-bottom: 20px;
+      margin-right: 10px;
+    }
+
+    .logout-btn:hover {
+      background-color: #272626;
+    }
+
+    .logout-btn img {
+      width: 25px;
+      margin-right: 10px;
+      transform: rotate(180deg);
+      filter: invert(1);
+    }
+
+    .delete-button {
+      background-color: #db2424;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+      margin-right: 10px;
+    }
+
+    .delete-button:hover {
+      background-color: #ff4d4d;
+    }
+
+    .results-button {
+      background-color: #070707;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .results-button:hover {
+      background-color: #595959;
+    }
+
+    .edit-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      text-align: center;
+      margin-right: 10px;
+    }
+
+    .edit-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="body1">
+    <div class="menu-btn" id="menu-btn">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="Menu">
+    </div>
+    <div class="sidebar">
+      <img src="https://cdn-icons-png.flaticon.com/512/320/320333.png" alt="Profesor">
+      <h4 id="profesor-name">Profesor</h4>
+      <div class="info-text">Historial</div>
+      <div class="scroll-padre">
+        <div class="scroll-bg">
+          <div class="scroll-div">
+            <div class="exams-container">
+              <!-- examen preview -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <button href="#" id="new" class="btn-new-exam">Nuevo examen</button>
+    </div>
+    <div class="exam-results-container">
+      <div class="exam-results-wrapper">
+        <!-- Exam part  -->
+        <div id="exam-viz"></div>
+        <!-- Result part -->
+        <div id="result-viz"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-menu" id="sidebar-menu">
+    <img src="https://cdn-icons-png.flaticon.com/512/320/320333.png" alt="Profesor">
+    <h4 id="sidebar-profesor-name">Profesor</h4>
+    <button class="logout-btn" id="logout-btn">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828479.png" alt="Cerrar Sesión">
+      Cerrar Sesión
+    </button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+  <script>
+    document.getElementById("new").addEventListener("click", function (e) {
+      window.location.href = "generador.html";
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', function () {
+      window.location.href = '/logout';
+    });
+
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebarMenu = document.getElementById('sidebar-menu');
+
+    menuBtn.addEventListener('click', function () {
+      sidebarMenu.classList.toggle('active');
+    });
+
+    // Carga la información del profesor al cargar la página
+    window.onload = function () {
+      fetch('/get-profesor-info') // Endpoint para obtener información del profesor
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('profesor-name').textContent = data.name;
+          document.getElementById('sidebar-profesor-name').textContent = data.name;
+        })
+        .catch((error) => console.error('Error al obtener la información del profesor:', error));
+
+      fetch('/get-exams-json') //  request al servidor para obtener los exámenes del profesor
+        .then(response => response.json())
+        .then(exams => {
+          const container = document.querySelector('.exams-container');
+          exams.forEach(exam => {
+            const button = document.createElement('button');
+            button.textContent = exam.title;
+            button.className = 'exam-button';
+
+            // Al hacer clic en un examen, mostrar su contenido
+            button.addEventListener("click", function (e) {
+              e.preventDefault();
+              displayExam(exam, button);
+            });
+
+            container.appendChild(button);
+          });
+        })
+        .catch((error) => console.error('Error:', error));
+    };
+
+    function displayExam(examData, examButton) {
+      const examContainer = document.getElementById('exam-viz');
+      const resultContainer = document.getElementById('result-viz');
+      examContainer.innerHTML = ''; // Limpia el contenedor antes de mostrar un nuevo examen
+      resultContainer.innerHTML = ''; // Limpia el contenedor de resultados
+
+      // Crea el título del examen
+      const examTitle = document.createElement('h2');
+      examTitle.textContent = `Detalles del Examen: ${examData.title}`;
+      examContainer.appendChild(examTitle);
+
+      // Crea el subtítulo del tema
+      const topicSubtitle = document.createElement('h3');
+      topicSubtitle.textContent = `Tema: ${examData.topic}`;
+      examContainer.appendChild(topicSubtitle);
+
+      // Crea el código del examen
+      const examCodePara = document.createElement('p');
+      examCodePara.textContent = `Código del Examen: ${examData.exam_code}`;
+      examCodePara.classList.add('exam-code'); 
+      examContainer.appendChild(examCodePara);
+
+      // Parsea el exam_data para mostrarlo como JSON
+      const examDataObj = JSON.parse(examData.exam_data);
+
+      // Crea un elemento para mostrar las preguntas y opciones
+      const examQuestionsList = document.createElement('div');
+      examDataObj.preguntas.forEach((pregunta, index) => {
+        const questionItem = document.createElement('div');
+        questionItem.classList.add('question-item');
+        const questionText = document.createElement('p');
+        questionText.textContent = `${index + 1}. ${pregunta.enunciado}`;
+
+        // Crear una lista para las opciones
+        const optionsList = document.createElement('ul');
+        optionsList.classList.add('options-list'); // Agrega clase para estilizar las opciones
+
+        // Recorre las opciones
+        pregunta.opciones.forEach(opcion => {
+          const optionItem = document.createElement('li');
+          optionItem.textContent = opcion;
+
+          // Si la opción es la respuesta correcta, agregar la clase 'correct-answer'
+          if (opcion === pregunta.respuesta) {
+            optionItem.classList.add('correct-answer');
+          }
+
+          optionsList.appendChild(optionItem);
+        });
+
+        // Agrega la pregunta y las opciones a la lista de preguntas
+        questionItem.appendChild(questionText);
+        questionItem.appendChild(optionsList);
+        examQuestionsList.appendChild(questionItem);
+      });
+
+      // Agrega la lista de preguntas al contenedor 
+      examContainer.appendChild(examQuestionsList);
+
+      // Crea un botón para eliminar el examen
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Eliminar Examen';
+      deleteButton.className = 'delete-button';
+      deleteButton.addEventListener('click', function () {
+        if (confirm('¿Estás seguro de que deseas eliminar este examen?')) {
+          deleteExam(examData.id, examButton); // Llama a la función deleteExam con el id del examen y el botón como parámetros
+        }
+      });
+      examContainer.appendChild(deleteButton);
+
+      // Crea el botón para ver los resultados
+      const resultsButton = document.createElement('button');
+      resultsButton.textContent = 'Ver Resultados';
+      resultsButton.className = 'results-button';
+      resultsButton.addEventListener('click', function () {
+        fetch(`/get-exam-results?examId=${examData.id}`)
+          .then(response => response.json())
+          .then(results => {
+            resultContainer.innerHTML = ''; // Limpia el contenedor antes de mostrar nuevos resultados
+
+            if (results.length === 0) {
+              const noResultsMessage = document.createElement('p');
+              noResultsMessage.textContent = 'Ningún usuario ha respondido este examen';
+              resultContainer.appendChild(noResultsMessage);
+            } else {
+              // Crea la tabla para los resultados
+              const table = document.createElement('table');
+              table.classList.add('results-table', 'table', 'table-striped');
+
+              // Encabezados 
+              const tableHeader = document.createElement('thead');
+              const headerRow = document.createElement('tr');
+              const headers = ['Usuario', 'Nombre', 'Calificación', 'Fecha y Hora'];
+
+              headers.forEach(headerText => {
+                const header = document.createElement('th');
+                header.textContent = headerText;
+                header.setAttribute('scope', 'col');
+                headerRow.appendChild(header);
+              });
+
+              tableHeader.appendChild(headerRow);
+              table.appendChild(tableHeader);
+
+              // Cuerpo de la tabla
+              const tableBody = document.createElement('tbody');
+              results.forEach(result => {
+                const row = document.createElement('tr');
+                const usernameCell = document.createElement('td');
+                usernameCell.textContent = result.username;
+                const nameCell = document.createElement('td');
+                nameCell.textContent = result.name; 
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = result.score;
+                const timestampCell = document.createElement('td');
+                timestampCell.textContent = new Date(result.timestamp).toLocaleString(); 
+
+                row.appendChild(usernameCell);
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                row.appendChild(timestampCell);
+                tableBody.appendChild(row);
+              });
+
+              table.appendChild(tableBody);
+              resultContainer.appendChild(table);
+            }
+          })
+          .catch(error => console.error('Error al obtener los resultados:', error));
+      });
+      examContainer.appendChild(resultsButton);
+
+      // Crea el botón para editar el examen
+      const editButton = document.createElement('button');
+      editButton.textContent = 'Editar Examen';
+      editButton.className = 'edit-button';
+      editButton.addEventListener('click', function () {
+        window.location.href = `editarExamen.html?id=${examData.id}`;
+      });
+      examContainer.appendChild(editButton);
+
+      // Agrega la clase active-exam al botón del examen actual
+      const activeButton = document.querySelector('.exam-button.active-exam');
+      if (activeButton) {
+        activeButton.classList.remove('active-exam');
+      }
+      examButton.classList.add('active-exam');
+    }
+
+    function deleteExam(examId, examButton) {
+      fetch(`/delete-exam?id=${examId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            // Limpia el contenedor del examen si está mostrando el examen eliminado
+            const examContainer = document.getElementById('exam-viz');
+            if (examButton.classList.contains('active-exam')) {
+              examContainer.innerHTML = '';
+            }
+            examButton.remove(); // Elimina el botón del examen de la lista
+          } else {
+            console.error('Error al eliminar el examen');
+          }
+        })
+        .catch((error) => console.error('Error al eliminar el examen:', error));
+    }
+  </script>
+</body>
+</html>
