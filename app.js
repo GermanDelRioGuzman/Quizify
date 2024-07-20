@@ -1,5 +1,3 @@
-//PRUEBA 1
-
 require('dotenv').config();
 const express = require('express');
 const passport = require('passport');
@@ -39,14 +37,14 @@ app.use((req, res, next) => {
     next();
 });
 
-console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
-console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET);
+// console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
+// console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET);
 
 //Conexión a la base de datos
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'password',
+    user: 'admin',
+    password: '080903',
     database: 'genuiz'
 });
 
@@ -206,35 +204,51 @@ app.get("/registrarme", (req, res) => {
 app.post("/registrarme", (req, res, next) => {
     const { name, username, password, role } = req.body;
 
+    // Verificar si los datos están llegando correctamente
+    console.log('Datos recibidos para registro:', req.body);
+
     connection.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
         if (err) {
+            console.error('Error en la consulta de usuarios:', err);
             return res.redirect('/registrarme?error=database');
         }
 
         if (results.length > 0) {
+            console.log('Usuario ya existe:', results);
             return res.redirect('/registrarme?error=userexists');
         }
 
         connection.query('SELECT id FROM role WHERE role_name = ?', [role], (err, results) => {
-            if (err || results.length === 0) {
+            if (err) {
+                console.error('Error en la consulta SELECT role:', err);
+                return res.redirect('/registrarme?error=database');
+            }
+
+            if (results.length === 0) {
+                console.log('Rol no encontrado:', role);
                 return res.redirect('/registrarme?error=rolenotfound');
             }
 
             const role_id = results[0].id;
+            console.log('Rol encontrado, role_id:', role_id);
 
             bcrypt.hash(password, 10, (err, hashedPassword) => {
                 if (err) {
+                    console.error('Error al hash el password:', err);
                     return res.redirect('/registrarme?error=hash');
                 }
 
                 const query = 'INSERT INTO users (name, username, password, role_id) VALUES (?, ?, ?, ?)';
                 connection.query(query, [name, username, hashedPassword, role_id], (err, results) => {
                     if (err) {
+                        console.error('Error al insertar el usuario:', err);
                         return res.redirect('/registrarme?error=insert');
                     }
 
+                    console.log('Usuario registrado con éxito:', results);
                     req.login({ id: results.insertId, username, role_name: role }, (err) => {
                         if (err) {
+                            console.error('Error en el login:', err);
                             return next(err);
                         }
                         return res.redirect('/');
@@ -244,6 +258,7 @@ app.post("/registrarme", (req, res, next) => {
         });
     });
 });
+
 
 // Autenticación con Google para login
 app.get('/auth/google/login', passport.authenticate('google-login', { scope: ['profile', 'email'] }));
@@ -394,6 +409,7 @@ app.post('/recibir-datos', ensureAuthenticated, ensureRole('teacher'), async (re
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
 
 app.post('/save-exam', ensureAuthenticated, ensureRole('teacher'), (req, res) => {
     const { title, topic, description_, level, content } = req.body;

@@ -1,5 +1,6 @@
-# GENUIZ
+# QUIZIFY
 
+para ejecutar el servidor de quizify solo ejecuta npm start desde la carpeta general
 
 NOTA: Para correr los servers
 - crear .env:
@@ -28,6 +29,9 @@ CREATE TABLE role (
     id INT AUTO_INCREMENT PRIMARY KEY,
     role_name ENUM('student', 'teacher') NOT NULL
 );
+
+INSERT INTO role (role_name) VALUES ('student');
+INSERT INTO role (role_name) VALUES ('teacher');
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
