@@ -444,6 +444,7 @@
       fetch('/get-exams-json') //  request al servidor para obtener los exámenes del profesor
         .then(response => response.json())
         .then(exams => {
+          console.log("Exámenes recibidos:", exams); // 🔍 Debug
           const container = document.querySelector('.exams-container');
           exams.forEach(exam => {
             const button = document.createElement('button');
@@ -463,6 +464,11 @@
     };
 
     function displayExam(examData, examButton) {
+      console.log("Datos del examen recibido:", examData); // 🔍 Verifica qué llega realmente
+if (!examData || !examData.exam_data) {
+    console.error("Error: exam_data está vacío o no existe");
+    return;
+}
       const examContainer = document.getElementById('exam-viz');
       const resultContainer = document.getElementById('result-viz');
       examContainer.innerHTML = ''; // Limpia el contenedor antes de mostrar un nuevo examen
@@ -485,8 +491,14 @@
       examContainer.appendChild(examCodePara);
 
       // Parsea el exam_data para mostrarlo como JSON
-      const examDataObj = JSON.parse(examData.exam_data);
-
+      let examDataObj;
+      try {
+        examDataObj = JSON.parse(examData.exam_data); // ⚠️ Asegúrate de que exam_data sea un JSON válido
+        console.log("JSON parseado correctamente:", examDataObj);
+    } catch (error) {
+        console.error("Error al parsear exam_data:", error);
+        alert("Error al mostrar el examen. Datos corruptos.");
+    }
       // Crea un elemento para mostrar las preguntas y opciones
       const examQuestionsList = document.createElement('div');
       examDataObj.preguntas.forEach((pregunta, index) => {
