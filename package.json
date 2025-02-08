@@ -4,9 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "vercel-start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo 'No build step needed'"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "body-parser": "^1.20.2",
     "braces": "^3.0.3",
     "connect-flash": "^0.1.1",
+    "connect-redis": "^8.0.1",
     "cookie": "^0.6.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -28,6 +30,7 @@
     "express-session": "^1.18.1",
     "fill-range": "^7.1.1",
     "has-flag": "^5.0.1",
+    "ioredis": "^5.4.2",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "nodemon": "^3.1.0",
