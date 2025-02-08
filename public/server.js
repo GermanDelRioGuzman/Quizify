@@ -1038,5 +1038,5 @@ app.post('/update-exam', ensureAuthenticated, ensureRole('teacher'), (req, res) 
     });
 });
 
-app.listen(8080, () => console.log("Server started on http://localhost:8080"));
+//app.listen(8080, () => console.log("Server started on http://localhost:8080"));
 module.exports = app;
