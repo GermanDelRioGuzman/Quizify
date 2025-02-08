@@ -20,6 +20,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser('secreto'));
 app.use(flash());
+app.use(express.static("public"));
 
 // Configuración de la sesión
 app.use(session({
