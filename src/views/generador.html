@@ -114,6 +114,7 @@
         }
 
         const examContent = data.botResponse.content;
+        const created_at = new Date().toISOString();
         localStorage.setItem('jsonData', JSON.stringify(examContent));
 
         // Guardar el examen en el servidor
@@ -126,6 +127,7 @@
             title: title,
             topic: inputTema,
             description_: description_,
+            date:  created_at, // Fecha actual
             level: dificultad,
             content: examContent // Asegurarse de que el contenido se pase correctamente
           })

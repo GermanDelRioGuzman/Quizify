@@ -670,34 +670,51 @@ app.get('/get-exams-json', ensureAuthenticated, ensureRole('teacher'), async (re
 
 
 // primero elimina resultados y cualquier registro dependiente al examed
-app.delete('/delete-exam', ensureAuthenticated, ensureRole('teacher'), (req, res) => {
+app.delete('/delete-exam', ensureAuthenticated, ensureRole('teacher'), async (req, res) => {
     const examId = req.query.id;
 
-    const deleteResultsQuery = 'DELETE FROM exam_results WHERE exam_id = ?';
-    connection.query(deleteResultsQuery, [examId], function (err) {
-        if (err) {
-            console.error('Error al eliminar los resultados del examen:', err);
-            return res.status(500).send('Error al eliminar los resultados del examen');
+    if (!examId) {
+        return res.status(400).json({ error: "Falta el examId en la petición" });
+    }
+
+    try {
+        // Primero elimina los resultados del examen
+        const { error: deleteResultsError } = await supabase
+            .from('exam_results')
+            .delete()
+            .eq('exam_id', examId);
+
+        if (deleteResultsError) {
+            console.error('❌ Error al eliminar los resultados del examen:', deleteResultsError);
+            return res.status(500).json({ error: 'Error al eliminar los resultados del examen' });
         }
 
-        // después elimina el examen 
-        const deleteExamQuery = 'DELETE FROM exams_json WHERE id = ?';
-        connection.query(deleteExamQuery, [examId], function (err) {
-            if (err) {
-                console.error('Error al eliminar el examen:', err);
-                return res.status(500).send('Error al eliminar el examen');
-            }
-            res.status(200).send({ message: `Examen ${examId} eliminado correctamente` });
-        });
-    });
+        // Luego elimina el examen en sí
+        const { error: deleteExamError } = await supabase
+            .from('exams_json')
+            .delete()
+            .eq('id', examId);
+
+        if (deleteExamError) {
+            console.error('❌ Error al eliminar el examen:', deleteExamError);
+            return res.status(500).json({ error: 'Error al eliminar el examen' });
+        }
+
+        res.status(200).json({ message: `✅ Examen ${examId} eliminado correctamente` });
+
+    } catch (err) {
+        console.error('❌ Error inesperado al eliminar el examen:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
+
 
 
 
 
 // Ruta para guardar el resultado del examen
 app.post('/save-exam-result', ensureAuthenticated, ensureRole('student'), async (req, res) => {
-    const { examId, finalScore } = req.body;
+    const { examId, finalScore,  exam_code} = req.body;
     const userId = req.user.id;
 
     try {
@@ -708,7 +725,8 @@ app.post('/save-exam-result', ensureAuthenticated, ensureRole('student'), async 
                 {
                     user_id: userId,
                     exam_id: examId,
-                    score: finalScore
+                    score: finalScore,
+                    exam_code: exam_code,
                 }
             ])
             .select(); // Optional: Return inserted data
