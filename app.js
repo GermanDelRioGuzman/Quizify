@@ -87,98 +87,106 @@ passport.use(new PassportLocal(async function (username, password, done) {
 }));
 
 
-// Configuración  Google  login
-passport.use('google-login', new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:8080/auth/google/callback/login"
-},
+// // Configuración  Google  login
+// passport.use('google-login', new GoogleStrategy({
+//     clientID: process.env.GOOGLE_CLIENT_ID,
+//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//     callbackURL: "https://quizify-fe.vercel.app/auth/google/callback/login"
+// },
 
-function(token, tokenSecret, profile, done) {
-    supabase 
-        .from('users')
-        .select('*')
-        .eq('google_id', profile.id)
-        .single()
-        .then(({data: user, error}) => {
-            if (error) {
-                return done(error);
-            }
+// function(token, tokenSecret, profile, done) {
+//     supabase 
+//         .from('users')
+//         .select('*')
+//         .eq('google_id', profile.id)
+//         .single()
+//         .then(({data: user, error}) => {
+//             if (error) {
+//                 return done(error);
+//             }
 
-            if (!user) {
-                return done(null, false, { message: 'Usuario no encontrado' });
-            }
+//             if (!user) {
+//                 return done(null, false, { message: 'Usuario no encontrado' });
+//             }
 
-            if(user.role_id == null){
-                return done(null, false, {message: 'complete'});
+//             if(user.role_id == null){
+//                 return done(null, false, {message: 'complete'});
 
-            }
-            return done(null,user);
-        })
-        .catch(err =>{
-            return done(err);
-        });
-}));
+//             }
+//             return done(null,user);
+//         })
+//         .catch(err =>{
+//             return done(err);
+//         });
+
+// }, (accessToken, refreshToken, profile, done) => {
+//     console.log("Google Profile:", JSON.stringify(profile, null, 2));
+//     return done(null, profile);
+// }));
 
 
-// Configuración  Google registro
-passport.use('google-register', new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:8080/auth/google/callback/register"
-},
-function(token, tokenSecret, profile, done) {
-    supabase
-        .from('users')
-        .select('*')
-        .eq('google_id', profile.id)
-        .single()
-        .then(({data: user, error}) => {
-            if (error){
-                return done(error);
-            }
-            if (user){
-                return done(null, false, {message: 'userexists'});
-            } else {
-                supabase
-                    .from('users')
-                    .insert([
-                        {
-                            google_id: profile.id,
-                            username: profile.emails[0].value,
-                            name: profile.displayName,
-                            role_id: null
-                        }
-                    ])
-                    .select('*') // Ensure we retrieve inserted data
-                    .then(({ data: newUser, error }) => {
-                        if (error) {
-                            return done(error);
-                        }
+// // Configuración  Google registro
+// passport.use('google-register', new GoogleStrategy({
+//     clientID: process.env.GOOGLE_CLIENT_ID,
+//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//     callbackURL: "https://quizify-fe.vercel.app/auth/google/callback/register"
+// },
+// function(token, tokenSecret, profile, done) {
+//     supabase
+//         .from('users')
+//         .select('*')
+//         .eq('google_id', profile.id)
+//         .single()
+//         .then(({data: user, error}) => {
+//             if (error){
+//                 return done(error);
+//             }
+//             if (user){
+//                 return done(null, false, {message: 'userexists'});
+//             } else {
+//                 supabase
+//                     .from('users')
+//                     .insert([
+//                         {
+//                             google_id: profile.id,
+//                             username: profile.emails[0].value,
+//                             name: profile.displayName,
+//                             role_id: null
+//                         }
+//                     ])
+//                     .select('*') // Ensure we retrieve inserted data
+//                     .then(({ data: newUser, error }) => {
+//                         if (error) {
+//                             return done(error);
+//                         }
         
-                        if (!newUser || newUser.length === 0) {
-                            return done(new Error('User not created'));
-                        }
+//                         if (!newUser || newUser.length === 0) {
+//                             return done(new Error('User not created'));
+//                         }
         
-                        const createdUser = {
-                            id: newUser[0].id,
-                            username: profile.emails[0].value,
-                            name: profile.displayName,
-                            role_id: null
-                        };
+//                         const createdUser = {
+//                             id: newUser[0].id,
+//                             username: profile.emails[0].value,
+//                             name: profile.displayName,
+//                             role_id: null
+//                         };
         
-                        return done(null, createdUser);
-                    })
-                    .catch(err => {
-                        return done(err);
-                    });
-            }
-        })
+//                         return done(null, createdUser);
+//                     })
+//                     .catch(err => {
+//                         return done(err);
+//                     });
+//             }
+//         })
         
-        .catch(err => {
-            return done(err);
-        });
-}));
+//         .catch(err => {
+//             return done(err);
+//         });
+// },
+// (accessToken, refreshToken, profile, done) => {
+//     console.log("Google Profile:", JSON.stringify(profile, null, 2));
+//     return done(null, profile);
+// }));
 
 passport.serializeUser(function (user, done) {
     done(null, user.id);
@@ -857,9 +865,6 @@ app.get('/check-exam-result', ensureAuthenticated, ensureRole('student'), async 
     if (!examId || isNaN(examId)) {
         return res.status(400).json({ error: 'Invalid or missing examId' });
     }
-    if (!userId || isNaN(userId)) {
-        return res.status(400).json({ error: 'Invalid or missing userId' });
-    }
 
     try {
         const { data, error } = await supabase
@@ -911,51 +916,6 @@ app.get('/get-exam-by-code', ensureAuthenticated, ensureRole('student'), async (
     } catch (err) {
         console.error('❌ Error inesperado al obtener el examen:', err);
         res.status(500).json({ error: 'Error interno del servidor' });
-    }
-});
-
-
-// Guardar el resultado del examen
-app.post('/save-exam-result', ensureAuthenticated, ensureRole('student'), async (req, res) => {
-    const { examId, finalScore } = req.body;
-    const userId = req.user?.id; // Ensure user ID is retrieved
-
-    // ✅ Validate the input
-    if (!examId || isNaN(examId)) {
-        return res.status(400).json({ error: 'Invalid or missing examId' });
-    }
-    if (!userId || isNaN(userId)) {
-        return res.status(400).json({ error: 'Invalid or missing userId' });
-    }
-    if (finalScore === undefined || finalScore === null || isNaN(finalScore)) {
-        return res.status(400).json({ error: 'Invalid or missing finalScore' });
-    }
-
-    try {
-        // ✅ Insert into Supabase
-        const { data, error } = await supabase
-            .from('exam_results') // Name of the table in Supabase
-            .insert([
-                {
-                    user_id: userId,
-                    exam_id: examId,
-                    score: finalScore,
-                }
-            ])
-            .select(); // Return the inserted data
-
-        // ❌ Handle errors
-        if (error) {
-            console.error('Error al guardar el resultado del examen en Supabase:', error);
-            return res.status(500).json({ error: 'Error al guardar el resultado del examen en Supabase' });
-        }
-
-        // ✅ Success response
-        res.json({ message: 'Resultado guardado correctamente', result: data[0] });
-
-    } catch (err) {
-        console.error('Unexpected error:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
@@ -1038,5 +998,5 @@ app.post('/update-exam', ensureAuthenticated, ensureRole('teacher'), (req, res) 
     });
 });
 
-//app.listen(8080, () => console.log("Server started on http://localhost:8080"));
-module.exports = app;
+app.listen(8080, () => console.log("Server started on http://localhost:8080"));
+//module.exports = app;

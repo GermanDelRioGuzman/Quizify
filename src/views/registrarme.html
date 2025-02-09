@@ -23,18 +23,18 @@
       <button type="submit" class="btn btn-register">Registrarme</button>
       <div id="username-error" class="error-message">Lo sentimos, esta cuenta ya está registrada.</div>
     </form>
-    <div class="login-section">
+    <!-- <div class="login-section">
       <button type="button" class="btn btn-register" id="google-sign-in">
         Continuar con Google
       </button>
-    </div>
+    </div> -->
     <a href="index.html" class="back-arrow">&larr;</a>
   </div>
 
   <script>
-    document.getElementById('google-sign-in').addEventListener('click', function() {
-      window.location.href = '/auth/google/register';
-    });
+    // document.getElementById('google-sign-in').addEventListener('click', function() {
+    //   window.location.href = '/auth/google/register';
+    // });
 
     // Mostrar mensaje de error si existe
     const urlParams = new URLSearchParams(window.location.search);
