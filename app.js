@@ -370,7 +370,7 @@ app.post("/registrarme", async (req, res, next) => {
                 role_id // Este valor debe ser válido o NULL
             }
         ])
-        .select('*');
+        .returning('*');
 
     if (error) {
         console.error('Error al registrar el usuario:', error);
@@ -654,7 +654,7 @@ app.get('/get-exams-json', ensureAuthenticated, ensureRole('teacher'), async (re
     try {
         const { data, error } = await supabase
             .from('exams_json')
-            .select('*')
+            .returning('*')
             .eq('teacher_id', req.user.id);
 
         if (error) {
@@ -756,7 +756,7 @@ app.get('/get-exam-results', ensureAuthenticated, ensureRole('teacher'), async (
         // Consulta a Supabase para obtener los resultados del examen con el usuario correspondiente
         const { data, error } = await supabase
             .from('exam_results') // Tabla de resultados de exámenes en Supabase
-            .select('*, user:user_id(username, name)') // Incluye información del usuario
+            .returning('*, user:user_id(username, name)') // Incluye información del usuario
             .eq('exam_id', examId); // Filtrar por exam_id
 
         if (error) {
@@ -950,7 +950,7 @@ app.get('/get-exam-by-id', ensureAuthenticated, ensureRole('student'), async (re
         // Consulta a Supabase para obtener el examen por ID
         const { data, error } = await supabase
             .from('exams_json') // Nombre de la tabla en Supabase
-            .select('*') // Seleccionar todos los campos
+            .returning('*') // Seleccionar todos los campos
             .eq('id', examId) // Filtrar por el ID del examen
             .single(); // Asegurar que solo devuelve un resultado único
 
