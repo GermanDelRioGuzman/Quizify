@@ -522,12 +522,13 @@
       const totalQuestions = preguntas.length;
       const finalScore = (score / totalQuestions) * 10;
       const exam_code = document.getElementById('examCode').value;
+      const timestamp = new Date().toISOString();
       fetch('/save-exam-result', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ examId, finalScore, exam_code})
+        body: JSON.stringify({ examId, finalScore, exam_code,topic, title,exam_id, timestamp })
       })
         .then(response => response.json())
         .then(data => {
